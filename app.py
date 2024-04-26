@@ -15,7 +15,7 @@ def main():
     """
     
     # Get Groq API key
-    groq_api_key = os.environ['GROQ_API_KEY']
+    api_key = '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'
 
     # Display the Groq logo
     spacer, col = st.columns([5, 1])  
@@ -48,7 +48,7 @@ def main():
 
     # Initialize Groq Langchain chat object and conversation
     groq_chat = ChatGroq(
-            groq_api_key=groq_api_key, 
+            groq_api_key=api_key, 
             model_name=model
     )
 
