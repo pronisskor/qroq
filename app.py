@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 from groq import Groq
 import random
 
@@ -8,13 +7,12 @@ from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain_groq import ChatGroq
 from langchain.prompts import PromptTemplate
 
-
 def main():
     """
     This function is the main entry point of the application. It sets up the Groq client, the Streamlit interface, and handles the chat interaction.
     """
     
-    # Get Groq API key
+    # Groq API 키를 시크릿에서 가져옵니다.
     groq_api_key = st.secrets["GROQ_API_KEY"]
 
     # Display the Groq logo
