@@ -6,6 +6,7 @@ import streamlit as st
 import os
 import pandas as pd
 import random
+from groq import Groq
 
 # 환경 변수에서 API 키 불러오기
 groq_api_key = st.secrets["GROQ_API_KEY"]
