@@ -71,8 +71,17 @@ def generate_sentence_with_word(word):
             stream=False
         )
         response = completion.choices[0].message.content
-        english_sentence, korean_translation = response.split('\n')
+        print("API Response:", response)  # API 응답 로깅
+
+        split_response = response.split('\n')
+        if len(split_response) >= 2:
+            english_sentence = split_response[0]
+            korean_translation = split_response[1]
+        else:
+            raise ValueError("응답 형식이 올바르지 않습니다.")
+
         return english_sentence, korean_translation
+
     except Exception as e:
         st.error(f"API 호출 중 오류가 발생했습니다: {e}")
         return None, None
