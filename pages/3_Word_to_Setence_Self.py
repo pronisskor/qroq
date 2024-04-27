@@ -52,17 +52,17 @@ if uploaded_file is not None and not st.session_state['words_list']:
 
 def generate_sentence_with_word(word):
     try:
-        client = Groq()
+        client = Groq(api_key=groq_api_key)
         completion = client.chat.completions.create(
             model="gemma-7b-it",
             messages=[
                 {
                     "role": "system",
-                    "content": "When an English word is provided, you need to create one simple and easy English conversation sentence that is commonly used in everyday life. You also need to provide one Korean translation of the English conversation sentence you created. In this way, you should provide a total of only two sentences."
+                    "content": "When an English word is provided, you need to create one simple and easy English conversation sentence that is commonly used in everyday life using the word '{}'. You also need to provide one Korean translation of the English conversation sentence you created. In this way, you should provide a total of only two sentences.".format(word)
                 },
                 {
                     "role": "user",
-                    "content": word
+                    "content": "Create a sentence using '{}'.".format(word)
                 }
             ],
             temperature=0,
