@@ -13,7 +13,7 @@ st.title("🦜🔗 Word to Sentence")
 groq_api_key = st.secrets["GROQ_API_KEY"]
 
 # Groq Langchain 챗 객체 초기화
-groq_chat = ChatGroq(api_key=groq_api_key, model_name="llama3-8b-8192")
+groq_chat = ChatGroq(api_key=groq_api_key, model_name="gemma-7b-it")
 
 # 대화 메모리 설정
 memory = ConversationBufferWindowMemory(k=5)
