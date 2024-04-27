@@ -1,23 +1,33 @@
-from langchain.llms import OpenAI
+from langchain.chains import ConversationChain
+from langchain.chains.conversation.memory import ConversationBufferWindowMemory
+from langchain_groq import ChatGroq
+from langchain.prompts import PromptTemplate
 import streamlit as st
-import openai
+import os
 import pandas as pd
 import random
-import os
+
+# 환경 변수에서 API 키 불러오기
+groq_api_key = st.secrets["GROQ_API_KEY"]
+
+# Groq Langchain 챗 객체 초기화
+groq_chat = ChatGroq(api_key=groq_api_key, model_name="llama3-70b-8192")
+
+# 대화 메모리 설정
+memory = ConversationBufferWindowMemory(k=5)
+
+# 대화 체인 설정
+conversation = ConversationChain(
+    llm=groq_chat,
+    memory=memory
+)
 
 # Streamlit 페이지 타이틀 설정
 st.title("🦜🔗 Word to Sentence AI")
 
 # 사이드바 설정
 with st.sidebar:
-    # 사용자로부터 OpenAI API 키 입력받기
-    openai_api_key = st.text_input("OpenAI API Key", type="password")
     st.markdown("OpenAI API 키 받으러 가기 [여기 클릭](https://platform.openai.com/account/api-keys)")
-
-# openai 라이브러리에 API 키 설정
-if openai_api_key:
-    openai.api_key = openai_api_key
-    langchain_openai = OpenAI(api_key=openai_api_key)
 
 if 'start' not in st.session_state:
     st.session_state['start'] = False
@@ -39,23 +49,11 @@ def load_words():
 
 def generate_sentence_with_word(word):
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a conversation sentence generator."},
-                {"role": "user", "content": f"Please create a short and simple sentence using the word '{word}'."}
-            ]
-        )
-        english_sentence = response.choices[0].message.content
+        response = conversation(f"Please create a short and simple sentence using the easy word '{word}'.")
+        english_sentence = response['response']
 
-        translation_response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a translator from English to Korean."},
-                {"role": "user", "content": f"Translate this sentence into Korean: '{english_sentence}'"}
-            ]
-        )
-        korean_translation = translation_response.choices[0].message.content
+        translation_response = conversation(f"Translate this sentence into Korean: '{english_sentence}'")
+        korean_translation = translation_response['response']
 
         return english_sentence, korean_translation
     except Exception as e:
