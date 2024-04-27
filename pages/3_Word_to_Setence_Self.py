@@ -71,9 +71,6 @@ def generate_sentence_with_word(word):
             stream=False
         )
         response = completion.choices[0].message.content
-        # API 응답 로깅
-        print("API Response:", response)
-
         # 응답 파싱
         lines = response.split('\n')
         english_sentence, korean_translation = None, None
@@ -81,8 +78,10 @@ def generate_sentence_with_word(word):
             cleaned_line = line.strip().strip('"')
             if '**English:**' in cleaned_line:
                 english_sentence = cleaned_line.replace('**English:**', '').strip().strip('"')
+                english_sentence = english_sentence.replace('**', '')  # '**' 제거
             elif '**Korean:**' in cleaned_line:
                 korean_translation = cleaned_line.replace('**Korean:**', '').strip().strip('"')
+                korean_translation = korean_translation.replace('**', '')  # '**' 제거
 
         if english_sentence and korean_translation:
             return english_sentence, korean_translation
