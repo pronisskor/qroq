@@ -1,17 +1,20 @@
 from langchain.chains import ConversationChain
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain_groq import ChatGroq
-from langchain.prompts import PromptTemplate
 import streamlit as st
 import os
 import pandas as pd
 import random
+from groq import Groq
+
+# Streamlit 페이지 타이틀 설정
+st.title("🦜🔗 Word to Sentence")
 
 # 환경 변수에서 API 키 불러오기
 groq_api_key = st.secrets["GROQ_API_KEY"]
 
 # Groq Langchain 챗 객체 초기화
-groq_chat = ChatGroq(api_key=groq_api_key, model_name="llama3-70b-8192")
+groq_chat = ChatGroq(api_key=groq_api_key, model_name="gemma-7b-it")
 
 # 대화 메모리 설정
 memory = ConversationBufferWindowMemory(k=5)
@@ -22,20 +25,7 @@ conversation = ConversationChain(
     memory=memory
 )
 
-# Streamlit 페이지 타이틀 설정
-st.title("🦜🔗 Word to Sentence AI")
-
-# 사이드바 설정
-with st.sidebar:
-    st.markdown("OpenAI API 키 받으러 가기 [여기 클릭](https://platform.openai.com/account/api-keys)")
-
-if 'start' not in st.session_state:
-    st.session_state['start'] = False
-
-if 'ai_words_list' not in st.session_state or 'ai_learned_count' not in st.session_state:
-    st.session_state['ai_words_list'] = []
-    st.session_state['ai_learned_count'] = 0
-
+# 파일 업로더 설정
 def load_words():
     file_name = 'http://ewking.kr/AE/word_sentence.xlsx'
     if file_name.endswith('.csv'):
@@ -49,26 +39,44 @@ def load_words():
 
 def generate_sentence_with_word(word):
     try:
-        response = conversation(f"Please create a short and simple sentence using the easy word '{word}'.")
-        english_sentence = response['response']
+        client = Groq(api_key=groq_api_key)
+        completion = client.chat.completions.create(
+            model="gemma-7b-it",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "When an English word is provided, you need to create one simple and easy English conversation sentence that is commonly used in everyday life using the word '{}'. You also need to provide one Korean translation of the English conversation sentence you created. In this way, you should provide a total of only two sentences.".format(word)
+                },
+                {
+                    "role": "user",
+                    "content": "Create a sentence using '{}'.".format(word)
+                }
+            ],
+            temperature=0,
+            max_tokens=1024,
+            top_p=0,
+            stream=False
+        )
+        response = completion.choices[0].message.content
+        # 응답 파싱
+        lines = response.split('\n')
+        english_sentence, korean_translation = None, None
+        for line in lines:
+            cleaned_line = line.strip().strip('"')
+            if '**English:**' in cleaned_line:
+                english_sentence = cleaned_line.replace('**English:**', '').strip().strip('"')
+                english_sentence = english_sentence.replace('**', '')  # '**' 제거
+            elif '**Korean:**' in cleaned_line:
+                korean_translation = cleaned_line.replace('**Korean:**', '').strip().strip('"')
+                korean_translation = korean_translation.replace('**', '')  # '**' 제거
 
-        translation_response = conversation(f"Translate this sentence into Korean: '{english_sentence}'")
-        korean_translation = translation_response['response']
-
-        return english_sentence, korean_translation
+        if english_sentence and korean_translation:
+            return english_sentence, korean_translation
+        else:
+            raise ValueError("Response does not contain expected format of English and Korean sentences.")
     except Exception as e:
         st.error(f"API 호출 중 오류가 발생했습니다: {e}")
         return None, None
-
-def restart_study():
-    if st.button('New Generate'):
-        st.session_state['start'] = False
-        st.session_state['ai_words_list'] = []
-        st.session_state['ai_learned_count'] = 0
-        load_words()
-        st.session_state['start'] = True
-
-restart_study()
 
 if st.session_state['start'] and st.session_state.get('ai_words_list'):
     random_word = st.session_state['ai_words_list'].pop(0)
