@@ -72,6 +72,7 @@ def generate_sentence_with_word(word):
             stream=False
         )
         response = completion.choices[0].message.content
+
         # 각 문장을 개별적으로 처리하기 위해 줄바꿈으로 분리합니다.
         lines = response.split('\n')
         english_sentence, korean_translation = None, None
