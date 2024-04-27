@@ -27,11 +27,11 @@ conversation = ConversationChain(
 
 # 파일 업로더 설정
 uploaded_file = st.file_uploader("Choose a file", type=["csv", "xlsx", "xls"])
-
 if uploaded_file is not None:
     if st.button("Restart"):
         if 'words_list' in st.session_state:
-            st.session_state.pop('words_list')
+            del st.session_state['words_list']
+        st.session_state['learned_count'] = 0  # 학습 카운터 초기화
 
 if 'words_list' not in st.session_state:
     st.session_state['words_list'] = []
@@ -50,36 +50,30 @@ if uploaded_file is not None and not st.session_state['words_list']:
         st.session_state['words_list'] = df[words_column].dropna().tolist()
         random.shuffle(st.session_state['words_list'])
 
-def generate_sentence_with_word(word):
-    try:
-        client = Groq()
-        completion = client.chat.completions.create(
-            model="gemma-7b-it",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "When an English word is provided, you need to create one simple and easy English conversation sentence that is commonly used in everyday life. You also need to provide one Korean translation of the English conversation sentence you created. In this way, you should provide a total of only two sentences."
-                },
-                {
-                    "role": "user",
-                    "content": word
-                }
-            ],
-            temperature=0,
-            max_tokens=1024,
-            top_p=0,
-            stream=False
-        )
-        response = completion.choices[0].message.content
-        parts = response.split('\n', 1)  # Split into two parts, expecting 1 separator
-        if len(parts) == 2:
-            english_sentence, korean_translation = parts
-        else:
-            raise ValueError("Response does not contain expected format of English and Korean sentences.")
-        return english_sentence, korean_translation
-    except Exception as e:
-        st.error(f"API 호출 중 오류가 발생했습니다: {e}")
-        return None, None
+    def generate_sentence_with_word(word):
+        try:
+            response = Groq.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a conversation sentence generator."},
+                    {"role": "user", "content": f"Please create a short and simple sentence using the easy word '{word}'."}
+                ]
+            )
+            english_sentence = response['choices'][0]['message']['content']
+
+            translation_response = Groq.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a translator from English to Korean."},
+                    {"role": "user", "content": f"Translate this sentence into Korean: '{english_sentence}'"}
+                ]
+            )
+            korean_translation = translation_response['choices'][0]['message']['content']
+
+            return english_sentence, korean_translation
+        except Exception as e:
+            st.error(f"API 호출 중 오류가 발생했습니다: {e}")
+            return None, None
 
 if st.session_state.get('words_list'):
     random_word = st.session_state['words_list'].pop(0)
