@@ -54,11 +54,11 @@ def generate_sentence_with_word(word):
     try:
         client = Groq()
         completion = client.chat.completions.create(
-            model="gemma-7b-it",
+            model="llama3-70b-8192",
             messages=[
                 {
                     "role": "system",
-                    "content": "When an English word is provided, you need to create one simple and easy English conversation sentence that is commonly used in everyday life. You also need to provide one Korean translation of the English conversation sentence you created. In this way, you should provide a total of only two sentences. -example- I'm looking forward to Sunday. 일요일을 기대하고 있다"
+                    "content": "When an English word is provided, you need to create one simple and easy English conversation sentence that is commonly used in everyday life. You also need to provide one Korean translation of the English conversation sentence you created."
                 },
                 {
                     "role": "user",
