@@ -58,7 +58,7 @@ def generate_sentence_with_word(word):
             messages=[
                 {
                     "role": "system",
-                    "content": "When an English word is provided, you need to create one simple and easy English conversation sentence that is commonly used in everyday life. You also need to provide one Korean translation of the English conversation sentence you created."
+                    "content": "When an English word is provided, you need to create one simple and easy English conversation sentence that is commonly used in everyday life. You also need to provide one Korean translation of the English conversation sentence you created. In this way, you should provide a total of only two sentences."
                 },
                 {
                     "role": "user",
