@@ -6,7 +6,6 @@ import os
 import pandas as pd
 import random
 from groq import Groq
-import re
 
 # Streamlit 페이지 타이틀 설정
 st.title("🦜🔗 Word to Sentence")
@@ -72,17 +71,17 @@ def generate_sentence_with_word(word):
             stream=False
         )
         response = completion.choices[0].message.content
-        # 각 문장을 개별적으로 처리하기 위해 줄바꿈으로 분리합니다.
-        lines = response.split('\n')
+        parts = response.split('\n')
+        # 영어 문장과 한국어 번역을 찾기 위해 각 줄을 검사합니다.
         english_sentence, korean_translation = None, None
-        for line in lines:
-            # 문장이 따옴표로 둘러싸여 있고, 한국어 표시가 없는 경우 영어 문장으로 간주
-            if re.match(r'^"[^"]+"$', line.strip()):
-                if not english_sentence:
-                    english_sentence = line.strip().strip('"')
-                else:
-                    korean_translation = line.strip().strip('"')
-                    break
+        for part in parts:
+            clean_part = part.strip().strip('"')  # 양쪽 공백과 따옴표 제거
+            if clean_part.endswith('"'):  # 마지막 따옴표 제거
+                clean_part = clean_part[:-1].strip()
+            if '**English:**' in part:
+                english_sentence = clean_part.replace('**English:**', '').strip()
+            elif '**Korean:**' in part:
+                korean_translation = clean_part.replace('**Korean:**', '').strip()
 
         if english_sentence and korean_translation:
             return english_sentence, korean_translation
