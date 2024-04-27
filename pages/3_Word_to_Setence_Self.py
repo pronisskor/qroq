@@ -51,7 +51,7 @@ if uploaded_file is not None and not st.session_state['words_list']:
 
 def generate_sentence_with_word(word):
     try:
-        response = conversation(f"Please create a short and simple sentence using the easy word '{word}'.")
+        response = conversation(f"create a short and simple one sentence using the easy word '{word}'.")
         english_sentence = response['response']
 
         translation_response = conversation(f"Translate this sentence into Korean: '{english_sentence}'")
