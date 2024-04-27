@@ -51,11 +51,13 @@ if uploaded_file is not None and not st.session_state['words_list']:
 
 def generate_sentence_with_word(word):
     try:
-        response = conversation(f"When an English word is provided, you need to create one simple and easy English conversation sentence that is commonly used in everyday life. You also need to provide one Korean translation of the English conversation sentence you created. In this way, you should provide a total of only two sentences.\n\n-example-\nI'm looking forward to Sunday.\n일요일을 기대하고 있다'{word}'.")
-        english_sentence = response['response']
-
-        translation_response = conversation(f"Translate this sentence into Korean: '{english_sentence}'")
-        korean_translation = translation_response['response']
+        # AI에게 영어 문장과 한국어 번역을 생성하도록 요청
+        response = conversation(f"Generate a simple English conversation sentence using the word '{word}', and provide its Korean translation.")
+        sentences = response['response'].split('\n')
+        if len(sentences) < 2:
+            raise Exception("Invalid response from API")
+        
+        english_sentence, korean_translation = sentences[0], sentences[1]
 
         return english_sentence, korean_translation
     except Exception as e:
