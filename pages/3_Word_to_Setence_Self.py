@@ -70,7 +70,7 @@ def generate_sentence_with_word(word):
             top_p=0,
             stream=False
         )
-        response = completion.choices[0].delta.content
+        response = completion.choices[0].message.content
         english_sentence, korean_translation = response.split('\n')
         return english_sentence, korean_translation
     except Exception as e:
