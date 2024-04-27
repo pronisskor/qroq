@@ -33,14 +33,14 @@ def generate_sentence_with_word(word):
             top_p=0,
             stream=False
         )
-        # 정확한 응답 처리를 위해 content 속성 확인
-        if completion.choices:
-            response = completion.choices[0].content.strip()  # 'content' 속성으로 변경
-            english_sentence, korean_translation = response.split('\n')
-            return english_sentence, korean_translation
-        else:
-            st.error("API 응답이 비어있습니다.")
-            return None, None
+        # API 응답 구조를 로깅하여 확인
+        print(completion)
+        print(completion.choices)
+        print(dir(completion.choices[0]))  # Choice 객체가 가진 속성 리스트 출력
+
+        response = completion.choices[0].text.strip()  # 수정할 필요가 있음
+        english_sentence, korean_translation = response.split('\n')
+        return english_sentence, korean_translation
     except Exception as e:
         st.error(f"API 호출 중 오류가 발생했습니다: {e}")
         return None, None
