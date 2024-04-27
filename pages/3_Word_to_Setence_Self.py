@@ -52,7 +52,8 @@ if uploaded_file is not None and not st.session_state['words_list']:
 
 def generate_sentence_with_word(word):
     try:
-        completion = Groq.chat.completions.create(
+        client = Groq()
+        completion = client.chat.completions.create(
             model="llama3-70b-8192",
             messages=[
                 {
