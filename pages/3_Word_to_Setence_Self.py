@@ -33,12 +33,7 @@ def generate_sentence_with_word(word):
             top_p=0,
             stream=False
         )
-        # API 응답 구조를 로깅하여 확인
-        print(completion)
-        print(completion.choices)
-        print(dir(completion.choices[0]))  # Choice 객체가 가진 속성 리스트 출력
-
-        response = completion.choices[0].text.strip()  # 수정할 필요가 있음
+        response = completion.choices[0].delta.content
         english_sentence, korean_translation = response.split('\n')
         return english_sentence, korean_translation
     except Exception as e:
