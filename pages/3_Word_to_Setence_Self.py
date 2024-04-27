@@ -33,9 +33,9 @@ def generate_sentence_with_word(word):
             top_p=0,
             stream=False
         )
-        # 응답에서 올바르게 텍스트를 추출
+        # 정확한 응답 처리를 위해 content 속성 확인
         if completion.choices:
-            response = completion.choices[0].text.strip()  # 응답의 텍스트를 직접 참조
+            response = completion.choices[0].content.strip()  # 'content' 속성으로 변경
             english_sentence, korean_translation = response.split('\n')
             return english_sentence, korean_translation
         else:
