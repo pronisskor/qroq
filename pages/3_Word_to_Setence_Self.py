@@ -71,7 +71,11 @@ def generate_sentence_with_word(word):
             stream=False
         )
         response = completion.choices[0].message.content
-        english_sentence, korean_translation = response.split('\n')
+        parts = response.split('\n', 1)  # Split into two parts, expecting 1 separator
+        if len(parts) == 2:
+            english_sentence, korean_translation = parts
+        else:
+            raise ValueError("Response does not contain expected format of English and Korean sentences.")
         return english_sentence, korean_translation
     except Exception as e:
         st.error(f"API 호출 중 오류가 발생했습니다: {e}")
