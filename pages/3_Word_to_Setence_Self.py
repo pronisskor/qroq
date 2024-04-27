@@ -52,7 +52,7 @@ if uploaded_file is not None and not st.session_state['words_list']:
 
     def generate_sentence_with_word(word):
         try:
-            response = Groq.ChatCompletion.create(
+            response = groq_chat.ChatCompletion.create(
                 model="gemma-7b-it",
                 messages=[
                     {"role": "system", "content": "You are a conversation sentence generator."},
@@ -61,7 +61,7 @@ if uploaded_file is not None and not st.session_state['words_list']:
             )
             english_sentence = response['choices'][0]['message']['content']
 
-            translation_response = Groq.ChatCompletion.create(
+            translation_response = groq_chat.ChatCompletion.create(
                 model="gemma-7b-it",
                 messages=[
                     {"role": "system", "content": "You are a translator from English to Korean."},
