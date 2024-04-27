@@ -33,8 +33,8 @@ def generate_sentence_with_word(word):
             top_p=0,
             stream=False
         )
-        response = completion.choices[0].delta.content
-        english_sentence, korean_translation = response.split('\n')
+        response = completion.choices[0].text  # 수정된 부분: 'delta' 대신 'text' 사용
+        english_sentence, korean_translation = response.strip().split('\n')
         return english_sentence, korean_translation
     except Exception as e:
         st.error(f"API 호출 중 오류가 발생했습니다: {e}")
