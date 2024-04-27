@@ -71,17 +71,18 @@ def generate_sentence_with_word(word):
             stream=False
         )
         response = completion.choices[0].message.content
-        parts = response.split('\n')
-        # 영어 문장과 한국어 번역을 찾기 위해 각 줄을 검사합니다.
+        # API 응답 로깅
+        print("API Response:", response)
+
+        # 응답 파싱
+        lines = response.split('\n')
         english_sentence, korean_translation = None, None
-        for part in parts:
-            clean_part = part.strip().strip('"')  # 양쪽 공백과 따옴표 제거
-            if clean_part.endswith('"'):  # 마지막 따옴표 제거
-                clean_part = clean_part[:-1].strip()
-            if '**English:**' in part:
-                english_sentence = clean_part.replace('**English:**', '').strip()
-            elif '**Korean:**' in part:
-                korean_translation = clean_part.replace('**Korean:**', '').strip()
+        for line in lines:
+            cleaned_line = line.strip().strip('"')
+            if '**English:**' in cleaned_line:
+                english_sentence = cleaned_line.replace('**English:**', '').strip().strip('"')
+            elif '**Korean:**' in cleaned_line:
+                korean_translation = cleaned_line.replace('**Korean:**', '').strip().strip('"')
 
         if english_sentence and korean_translation:
             return english_sentence, korean_translation
