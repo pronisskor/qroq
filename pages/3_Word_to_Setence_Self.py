@@ -72,15 +72,20 @@ def generate_sentence_with_word(word):
             stream=False
         )
         response = completion.choices[0].message.content
-        # 정규 표현식을 사용하여 문장을 추출합니다.
-        english_regex = r'"\s*(.*?)\s*"'
-        korean_regex = r'"\s*(.*?)\s*"'
-
-        english_sentence = re.search(english_regex, response)
-        korean_translation = re.search(korean_regex, response, re.IGNORECASE)
+        # 각 문장을 개별적으로 처리하기 위해 줄바꿈으로 분리합니다.
+        lines = response.split('\n')
+        english_sentence, korean_translation = None, None
+        for line in lines:
+            # 문장이 따옴표로 둘러싸여 있고, 한국어 표시가 없는 경우 영어 문장으로 간주
+            if re.match(r'^"[^"]+"$', line.strip()):
+                if not english_sentence:
+                    english_sentence = line.strip().strip('"')
+                else:
+                    korean_translation = line.strip().strip('"')
+                    break
 
         if english_sentence and korean_translation:
-            return english_sentence.group(1), korean_translation.group(1)
+            return english_sentence, korean_translation
         else:
             raise ValueError("Response does not contain expected format of English and Korean sentences.")
     except Exception as e:
