@@ -59,7 +59,7 @@ def generate_sentence_with_word(word):
             messages=[
                 {
                     "role": "system",
-                    "content": "Create a simple English sentence using the word '{}' and provide its Korean translation.".format(word)
+                    "content": "When an English word is provided, you need to create one simple and easy English conversation sentence that is commonly used in everyday life using the word '{}'. You also need to provide one Korean translation of the English conversation sentence you created. In this way, you should provide a total of only two sentences.".format(word)
                 },
                 {
                     "role": "user",
@@ -72,20 +72,16 @@ def generate_sentence_with_word(word):
             stream=False
         )
         response = completion.choices[0].message.content
-
-        # API 응답 로깅
-        print("API Response:", response)
-
-        # 응답 파싱
+        # 각 문장을 개별적으로 처리하기 위해 줄바꿈으로 분리합니다.
         lines = response.split('\n')
         english_sentence, korean_translation = None, None
         for line in lines:
-            if line.strip().startswith('"') and line.strip().endswith('"'):
-                cleaned_line = line.strip().strip('"')
+            # 문장이 따옴표로 둘러싸여 있고, 한국어 표시가 없는 경우 영어 문장으로 간주
+            if re.match(r'^"[^"]+"$', line.strip()):
                 if not english_sentence:
-                    english_sentence = cleaned_line
+                    english_sentence = line.strip().strip('"')
                 else:
-                    korean_translation = cleaned_line
+                    korean_translation = line.strip().strip('"')
                     break
 
         if english_sentence and korean_translation:
@@ -95,7 +91,6 @@ def generate_sentence_with_word(word):
     except Exception as e:
         st.error(f"API 호출 중 오류가 발생했습니다: {e}")
         return None, None
-
 
 if st.session_state.get('words_list'):
     random_word = st.session_state['words_list'].pop(0)
