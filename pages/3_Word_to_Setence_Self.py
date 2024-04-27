@@ -5,6 +5,35 @@ import streamlit as st
 import os
 import pandas as pd
 import random
+from groq import Groq
+
+client = Groq()
+completion = client.chat.completions.create(
+    model="gemma-7b-it",
+    messages=[
+        {
+            "role": "system",
+            "content": "When an English word is provided, you need to create one simple and easy English conversation sentence that is commonly used in everyday life. You also need to provide one Korean translation of the English conversation sentence you created. In this way, you should provide a total of only two sentences.\n\n(example)\nI'm looking forward to Sunday.\n일요일을 기대하고 있다"
+        },
+        {
+            "role": "user",
+            "content": "backpack"
+        },
+        {
+            "role": "assistant",
+            "content": "Can I borrow your backpack for a moment?\n백팩을 순간 동안 대여할 수 있을까요?"
+        }
+    ],
+    temperature=0,
+    max_tokens=1024,
+    top_p=0,
+    stream=True,
+    stop=None,
+)
+
+for chunk in completion:
+    print(chunk.choices[0].delta.content or "", end="")
+
 
 # Streamlit 페이지 타이틀 설정
 st.title("🦜🔗 Word to Sentence")
@@ -13,7 +42,7 @@ st.title("🦜🔗 Word to Sentence")
 groq_api_key = st.secrets["GROQ_API_KEY"]
 
 # Groq Langchain 챗 객체 초기화
-groq_chat = ChatGroq(api_key=groq_api_key, model_name="llama3-8b-8192")
+groq_chat = ChatGroq(api_key=groq_api_key, model_name="gemma-7b-it")
 
 # 대화 메모리 설정
 memory = ConversationBufferWindowMemory(k=5)
