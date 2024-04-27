@@ -33,9 +33,14 @@ def generate_sentence_with_word(word):
             top_p=0,
             stream=False
         )
-        response = completion.choices[0].text  # 수정된 부분: 'delta' 대신 'text' 사용
-        english_sentence, korean_translation = response.strip().split('\n')
-        return english_sentence, korean_translation
+        # 응답에서 올바르게 텍스트를 추출
+        if completion.choices:
+            response = completion.choices[0].text.strip()  # 응답의 텍스트를 직접 참조
+            english_sentence, korean_translation = response.split('\n')
+            return english_sentence, korean_translation
+        else:
+            st.error("API 응답이 비어있습니다.")
+            return None, None
     except Exception as e:
         st.error(f"API 호출 중 오류가 발생했습니다: {e}")
         return None, None
