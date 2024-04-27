@@ -54,7 +54,7 @@ def generate_sentence_with_word(word):
     try:
         client = Groq()
         completion = client.chat.completions.create(
-            model="llama3-70b-8192",
+            model="gemma-7b-it",
             messages=[
                 {
                     "role": "system",
