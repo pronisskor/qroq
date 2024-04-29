@@ -14,7 +14,7 @@ st.title("🦜🔗 Word to Sentence")
 groq_api_key = st.secrets["GROQ_API_KEY"]
 
 # Groq Langchain 챗 객체 초기화
-groq_chat = ChatGroq(api_key=groq_api_key, model_name="gemma-7b-it")
+groq_chat = ChatGroq(api_key=groq_api_key, model_name="llama3-8b-8192")
 
 # 대화 메모리 설정
 memory = ConversationBufferWindowMemory(k=5)
@@ -54,21 +54,106 @@ def generate_sentence_with_word(word):
     try:
         client = Groq(api_key=groq_api_key)
         completion = client.chat.completions.create(
-            model="gemma-7b-it",
+            model="llama3-8b-8192",
             messages=[
-                {
-                    "role": "system",
-                    "content": "When an English word is provided, you need to create one simple and easy English conversation sentence that is commonly used in everyday life using the word '{}'. You also need to provide one Korean translation of the English conversation sentence you created. In this way, you should provide a total of only two sentences.".format(word)
-                },
-                {
-                    "role": "user",
-                    "content": "Create a sentence using '{}'.".format(word)
-                }
-            ],
-            temperature=0,
-            max_tokens=1024,
-            top_p=0,
-            stream=False
+        {
+            "role": "system",
+            "content": "You are an English tutor who generates sentences with a word when it is presented. When generating words, you should use easy and simple words that English beginners can know. You should make only 1 short sentence that you use a lot in your real life."
+        },
+        {
+            "role": "user",
+            "content": "laptop"
+        },
+        {
+            "role": "assistant",
+            "content": "I often use my laptop to check my email."
+        },
+        {
+            "role": "user",
+            "content": "coffee"
+        },
+        {
+            "role": "assistant",
+            "content": "I drink coffee every morning."
+        },
+        {
+            "role": "user",
+            "content": "TV"
+        },
+        {
+            "role": "assistant",
+            "content": "I watch TV with my family on Friday nights."
+        },
+        {
+            "role": "user",
+            "content": "fridge"
+        },
+        {
+            "role": "assistant",
+            "content": "I keep my juice in the fridge."
+        },
+        {
+            "role": "user",
+            "content": "table"
+        },
+        {
+            "role": "assistant",
+            "content": "We have dinner on the table at 6 pm."
+        },
+        {
+            "role": "user",
+            "content": "computer"
+        },
+        {
+            "role": "assistant",
+            "content": "My brother works on the computer all day."
+        },
+        {
+            "role": "user",
+            "content": "chair"
+        },
+        {
+            "role": "assistant",
+            "content": "My mom sits in the chair to read a book."
+        },
+        {
+            "role": "user",
+            "content": "easy"
+        },
+        {
+            "role": "assistant",
+            "content": "Learning English is easy for beginners."
+        },
+        {
+            "role": "user",
+            "content": "youtube"
+        },
+        {
+            "role": "assistant",
+            "content": "I often watch educational videos on YouTube."
+        },
+        {
+            "role": "user",
+            "content": "watch"
+        },
+        {
+            "role": "assistant",
+            "content": "I like to watch a movie on the weekend."
+        },
+        {
+            "role": "user",
+            "content": "apple"
+        },
+        {
+            "role": "assistant",
+            "content": "My favorite fruit is a juicy apple."
+        }
+    ],
+    temperature=1,
+    max_tokens=1024,
+    top_p=1,
+    stream=True,
+    stop=None,
         )
         response = completion.choices[0].message.content
         # 응답 파싱
