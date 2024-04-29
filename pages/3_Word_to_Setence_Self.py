@@ -52,11 +52,10 @@ if uploaded_file is not None and not st.session_state['words_list']:
         random.shuffle(st.session_state['words_list'])
 
 def generate_sentence_with_word(word):
-    # JSON 파일에서 메시지 로드
+    print(f"Generating sentence for word: {word}")  # 단어 확인 로그 추가
     with open('/mount/src/qroq/pages/messages.json', 'r') as file:
         messages = json.load(file)
 
-    # 여기서 'messages'를 API 호출에 사용
     try:
         client = Groq(api_key=groq_api_key)
         completion = client.chat.completions.create(
@@ -68,8 +67,10 @@ def generate_sentence_with_word(word):
             stream=True,
             stop=None,
         )
+        print("API response received")  # API 응답 로그
         response = completion.choices[0].message.content
-        # 응답 파싱
+        print(f"Response content: {response}")  # 응답 내용 로그
+
         lines = response.split('\n')
         english_sentence, korean_translation = None, None
         for line in lines:
@@ -84,8 +85,9 @@ def generate_sentence_with_word(word):
         else:
             raise ValueError("Response does not contain expected format of English and Korean sentences.")
     except Exception as e:
-        print(f"API 호출 중 오류가 발생했습니다: {e}")
+        print(f"API 호출 중 오류가 발생했습니다: {e}")  # 오류 상세 로그
         return None, None
+
 
 if st.session_state.get('words_list'):
     random_word = st.session_state['words_list'].pop(0)
