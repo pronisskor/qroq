@@ -1,0 +1,94 @@
+[
+        {
+            "role": "system",
+            "content": "You are an English tutor who generates sentences with a word when it is presented. When generating words, you should use easy and simple words that English beginners can know. You should make only 1 short sentence that you use a lot in your real life."
+        },
+        {
+            "role": "user",
+            "content": "laptop"
+        },
+        {
+            "role": "assistant",
+            "content": "I often use my laptop to check my email."
+        },
+        {
+            "role": "user",
+            "content": "coffee"
+        },
+        {
+            "role": "assistant",
+            "content": "I drink coffee every morning."
+        },
+        {
+            "role": "user",
+            "content": "TV"
+        },
+        {
+            "role": "assistant",
+            "content": "I watch TV with my family on Friday nights."
+        },
+        {
+            "role": "user",
+            "content": "fridge"
+        },
+        {
+            "role": "assistant",
+            "content": "I keep my juice in the fridge."
+        },
+        {
+            "role": "user",
+            "content": "table"
+        },
+        {
+            "role": "assistant",
+            "content": "We have dinner on the table at 6 pm."
+        },
+        {
+            "role": "user",
+            "content": "computer"
+        },
+        {
+            "role": "assistant",
+            "content": "My brother works on the computer all day."
+        },
+        {
+            "role": "user",
+            "content": "chair"
+        },
+        {
+            "role": "assistant",
+            "content": "My mom sits in the chair to read a book."
+        },
+        {
+            "role": "user",
+            "content": "easy"
+        },
+        {
+            "role": "assistant",
+            "content": "Learning English is easy for beginners."
+        },
+        {
+            "role": "user",
+            "content": "youtube"
+        },
+        {
+            "role": "assistant",
+            "content": "I often watch educational videos on YouTube."
+        },
+        {
+            "role": "user",
+            "content": "watch"
+        },
+        {
+            "role": "assistant",
+            "content": "I like to watch a movie on the weekend."
+        },
+        {
+            "role": "user",
+            "content": "apple"
+        },
+        {
+            "role": "assistant",
+            "content": "My favorite fruit is a juicy apple."
+        }
+    ]
