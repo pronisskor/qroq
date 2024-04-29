@@ -51,10 +51,18 @@ if uploaded_file is not None and not st.session_state['words_list']:
         st.session_state['words_list'] = df[words_column].dropna().tolist()
         random.shuffle(st.session_state['words_list'])
 
+def load_messages():
+    file_path = os.path.join(os.getcwd(), "pages", "messages.json")
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            messages = json.load(file)
+        return messages
+    else:
+        raise FileNotFoundError("messages.json 파일을 찾을 수 없습니다.")
+
 def generate_sentence_with_word(word):
     print(f"Generating sentence for word: {word}")  # 단어 확인 로그 추가
-    with open('/mount/src/qroq/pages/messages.json', 'r') as file:
-        messages = json.load(file)
+    messages = load_messages()
 
     try:
         client = Groq(api_key=groq_api_key)
@@ -103,6 +111,6 @@ if st.session_state.get('words_list'):
 if uploaded_file is not None and 'words_list' in st.session_state:
     if st.button("다음 단어"):
         if not st.session_state['words_list']:
-            st.markdown(f'<p style="background-color: #bffff2; padding: 10px;">모든 단어에 대한 문장을 생성했습니다.</p>', unsafe_allow_html=True)
+            st.markown(f'<p style="background-color: #bffff2; padding: 10px;">모든 단어에 대한 문장을 생성했습니다.</p>', unsafe_allow_html=True)
             del st.session_state['words_list']
             st.session_state['learned_count'] = 0  # 학습 카운터 초기화
