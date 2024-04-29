@@ -6,6 +6,7 @@ import os
 import pandas as pd
 import random
 from groq import Groq
+import json
 
 # Streamlit 페이지 타이틀 설정
 st.title("🦜🔗 Word to Sentence")
@@ -51,109 +52,21 @@ if uploaded_file is not None and not st.session_state['words_list']:
         random.shuffle(st.session_state['words_list'])
 
 def generate_sentence_with_word(word):
+    # JSON 파일에서 메시지 로드
+    with open('messages.json', 'r') as file:
+        messages = json.load(file)
+
+    # 여기서 'messages'를 API 호출에 사용
     try:
         client = Groq(api_key=groq_api_key)
         completion = client.chat.completions.create(
             model="llama3-8b-8192",
-            messages=[
-        {
-            "role": "system",
-            "content": "You are an English tutor who generates sentences with a word when it is presented. When generating words, you should use easy and simple words that English beginners can know. You should make only 1 short sentence that you use a lot in your real life."
-        },
-        {
-            "role": "user",
-            "content": "laptop"
-        },
-        {
-            "role": "assistant",
-            "content": "I often use my laptop to check my email."
-        },
-        {
-            "role": "user",
-            "content": "coffee"
-        },
-        {
-            "role": "assistant",
-            "content": "I drink coffee every morning."
-        },
-        {
-            "role": "user",
-            "content": "TV"
-        },
-        {
-            "role": "assistant",
-            "content": "I watch TV with my family on Friday nights."
-        },
-        {
-            "role": "user",
-            "content": "fridge"
-        },
-        {
-            "role": "assistant",
-            "content": "I keep my juice in the fridge."
-        },
-        {
-            "role": "user",
-            "content": "table"
-        },
-        {
-            "role": "assistant",
-            "content": "We have dinner on the table at 6 pm."
-        },
-        {
-            "role": "user",
-            "content": "computer"
-        },
-        {
-            "role": "assistant",
-            "content": "My brother works on the computer all day."
-        },
-        {
-            "role": "user",
-            "content": "chair"
-        },
-        {
-            "role": "assistant",
-            "content": "My mom sits in the chair to read a book."
-        },
-        {
-            "role": "user",
-            "content": "easy"
-        },
-        {
-            "role": "assistant",
-            "content": "Learning English is easy for beginners."
-        },
-        {
-            "role": "user",
-            "content": "youtube"
-        },
-        {
-            "role": "assistant",
-            "content": "I often watch educational videos on YouTube."
-        },
-        {
-            "role": "user",
-            "content": "watch"
-        },
-        {
-            "role": "assistant",
-            "content": "I like to watch a movie on the weekend."
-        },
-        {
-            "role": "user",
-            "content": "apple"
-        },
-        {
-            "role": "assistant",
-            "content": "My favorite fruit is a juicy apple."
-        }
-    ],
-    temperature=1,
-    max_tokens=1024,
-    top_p=1,
-    stream=True,
-    stop=None,
+            messages=messages,
+            temperature=1,
+            max_tokens=1024,
+            top_p=1,
+            stream=True,
+            stop=None,
         )
         response = completion.choices[0].message.content
         # 응답 파싱
@@ -163,17 +76,15 @@ def generate_sentence_with_word(word):
             cleaned_line = line.strip().strip('"')
             if '**English:**' in cleaned_line:
                 english_sentence = cleaned_line.replace('**English:**', '').strip().strip('"')
-                english_sentence = english_sentence.replace('**', '')  # '**' 제거
             elif '**Korean:**' in cleaned_line:
                 korean_translation = cleaned_line.replace('**Korean:**', '').strip().strip('"')
-                korean_translation = korean_translation.replace('**', '')  # '**' 제거
 
         if english_sentence and korean_translation:
             return english_sentence, korean_translation
         else:
             raise ValueError("Response does not contain expected format of English and Korean sentences.")
     except Exception as e:
-        st.error(f"API 호출 중 오류가 발생했습니다: {e}")
+        print(f"API 호출 중 오류가 발생했습니다: {e}")
         return None, None
 
 if st.session_state.get('words_list'):
