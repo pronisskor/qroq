@@ -53,7 +53,7 @@ if uploaded_file is not None and not st.session_state['words_list']:
 
 def generate_sentence_with_word(word):
     # JSON 파일에서 메시지 로드
-    with open('messages.json', 'r') as file:
+    with open('./messages.json', 'r') as file:
         messages = json.load(file)
 
     # 여기서 'messages'를 API 호출에 사용
