@@ -68,7 +68,7 @@ def generate_sentence_with_word(word):
             temperature=0,
             max_tokens=1024,
             top_p=0,
-            stream=True
+            stream=False
         )
         response = completion.choices[0].message.content
         # 응답 파싱
