@@ -63,13 +63,7 @@ def generate_sentence_with_word(word):
                 {
                     "role": "user",
                     "content": "provide easy and short English conversation sentences that are frequently used in everyday life, along with their Korean translations. '{}'.".format(word)
-                },
-                {
-                    "role": "assistant",
-                    "content": "I like to watch a movie on the weekend.\n\n저는 주말에 영화 보는 것을 좋아합니다."
                 }
-                
-                
             ],
             temperature=0,
             max_tokens=1024,
