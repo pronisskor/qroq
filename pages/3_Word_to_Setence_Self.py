@@ -72,10 +72,19 @@ def generate_sentence_with_word(word):
             stream=False
         )
         response = completion.choices[0].message.content
-        parts = response.split('\n', 1)  # Split into two parts, expecting 1 separator
-        if len(parts) == 2:
-            english_sentence = parts[0].replace('**English:** "', '').replace('"\n', '').strip()
-            korean_translation = parts[1].replace('**Korean:** "', '').replace('"', '').strip()
+        # 응답 파싱
+        lines = response.split('\n')
+        english_sentence, korean_translation = None, None
+        for line in lines:
+            cleaned_line = line.strip().strip('"')
+            if '**English:**' in cleaned_line:
+                english_sentence = cleaned_line.replace('**English:**', '').strip().strip('"')
+                english_sentence = english_sentence.replace('**', '')  # '**' 제거
+            elif '**Korean:**' in cleaned_line:
+                korean_translation = cleaned_line.replace('**Korean:**', '').strip().strip('"')
+                korean_translation = korean_translation.replace('**', '')  # '**' 제거
+
+        if english_sentence and korean_translation:
             return english_sentence, korean_translation
         else:
             raise ValueError("Response does not contain expected format of English and Korean sentences.")
